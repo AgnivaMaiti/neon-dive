@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Dive</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="ui-layer">
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <!-- Mode Selection (Custom Dropdown) -->
+            <div class="menu-container interactive">
+                <div class="custom-select">
+                    <div class="select-selected">LEISURE</div>
+                    <div class="select-items select-hide">
+                        <div data-value="leisure">LEISURE</div>
+                        <div data-value="hardcore">HARDCORE</div>
+                        <div data-value="zen">ZEN</div>
+                        <div data-value="levels">STORY MODE</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="leaderboard-container interactive">
+                <div class="leaderboard-title">Top Agents</div>
+                <ul id="leaderboardList" class="leaderboard-list">
+                    <!-- Populated by JS -->
+                    <li><span>--</span> ---</li>
+                </ul>
+            </div>
+
+            <!-- Settings & Pause -->
+            <div class="settings-container interactive">
+                <button id="pauseBtn" class="settings-btn" style="margin-right: 10px;">II</button>
+                <button id="settingsBtn" class="settings-btn">⚙️</button>
+                <div id="settingsPanel" class="settings-panel hidden">
+                    <div class="settings-title">AUDIO OPTS</div>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="muteMusicBtn">
+                        <span class="control-label">MUTE MUSIC</span>
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="muteAllBtn">
+                        <span class="control-label">MUTE ALL</span>
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="showGridBtn">
+                        <span class="control-label">SHOW GRID</span>
+                    </label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="botModeBtn">
+                        <span class="control-label" style="color: #ff9900;">AUTO PILOT</span>
+                    </label>
+                    <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); paddingTop: 10px;">
+                        <span class="control-label" style="display:block; margin-bottom:5px;">JUMP TO LEVEL</span>
+                        <input type="number" id="levelInput" min="1" max="50" value="1" style="
+                            width: 100%; 
+                            background: rgba(0,0,0,0.5); 
+                            border: 1px solid #333; 
+                            color: #00ffcc; 
+                            font-family: 'Space Mono', monospace; 
+                            padding: 5px;
+                        ">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Display -->
+        <div class="score-container">
+            <div class="score-label">Score</div>
+            <div id="scoreValue" class="score-value">0</div>
+        </div>
+
+        <!-- Polarity Button (Mobile) -->
+        <button id="polarityBtn" class="interactive hidden" style="
+            position: absolute; 
+            bottom: 30px; 
+            right: 30px; 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            background: rgba(0,0,0,0.5); 
+            color: white; 
+            font-weight: bold; 
+            z-index: 50;">SWAP</button>
+
+        <!-- Start/Gameover Screen -->
+        <div id="startScreen" class="center-screen interactive">
+            <h1 id="gameTitle" class="game-title">NEON DIVE</h1>
+            <p class="instructions">Hold & Drag to Move. Avoid the Neon Shapes.</p>
+            <button id="startBtn" class="start-btn">INITIATE DIVE</button>
+        </div>
+
+        <!-- Story Overlay -->
+        <div id="story-overlay" class="hidden">
+            <div class="terminal-window">
+                <div id="story-title">LEVEL 1</div>
+                <div id="story-text" class="typing-effect"></div>
+                <div class="blinking-cursor">_</div>
+            </div>
+        </div>
+
+        <!-- Upgrade Overlay -->
+        <div id="upgrade-overlay" class="hidden" style="
+            position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200;">
+            <h2
+                style="color: #ff00ff; text-transform: uppercase; font-size: 32px; margin-bottom: 30px; text-shadow: 0 0 20px #ff00ff;">
+                System Breach: Hacks Available</h2>
+            <div id="upgrade-cards" style="display: flex; gap: 20px;">
+                <!-- Cards injected here -->
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
