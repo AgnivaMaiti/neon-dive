@@ -1195,8 +1195,12 @@ function startNextLevel() {
   }
 
   // 2. Hide Leaderboard in Story Mode
+  // 2. Hide Leaderboard in Story Mode (and LEVELS in general while playing)
   const lb = document.querySelector('.leaderboard-container');
-  if (lb) lb.classList.add('hidden');
+  if (lb) {
+    lb.classList.add('hidden');
+    lb.style.display = "none"; // FORCE HIDE
+  }
 
   // ---
 
@@ -1325,11 +1329,11 @@ function startGame() {
   document.getElementById("polarityBtn").classList.add("hidden");
   document.getElementById("polarityBtn").style.display = "none"; // FORCE HIDE
 
-  // Fix: Show Leaderboard in Leisure/Hardcore (since it's hidden by default)
+  // Fix: HIDE Leaderboard in Gameplay (Standard Arcade/Leisure/Hardcore)
   const lb = document.querySelector('.leaderboard-container');
   if (lb) {
-    lb.classList.remove('hidden');
-    lb.style.display = "block"; // FORCE SHOW
+    lb.classList.add('hidden');
+    lb.style.display = "none"; // FORCE HIDE
   }
 
   audio.playStart(); // Start Audio
