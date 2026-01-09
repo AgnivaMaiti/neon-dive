@@ -824,8 +824,9 @@ polarityBtn.addEventListener("click", (e) => {
 // Boss State
 let boss = {
   active: false,
-  x: width / 2,
-  y: height / 2,
+  x: 0, // Fix: Init to 0 to avoid NaN issues
+  y: 0,
+
   hp: 100,
   maxHp: 100,
   phase: 1,
@@ -1023,6 +1024,10 @@ function resize() {
     player.x = width / 2;
     player.y = height / 2;
   }
+
+  // Fix: Ensure boss is centered on resize
+  boss.x = width / 2;
+  boss.y = height / 2;
 }
 window.addEventListener("resize", resize);
 resize();
@@ -1425,10 +1430,11 @@ function update() {
       while (diff <= -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
 
-      if (dist > 50 && Math.abs(diff) < 0.1) { // 50 is boss radius, 0.1 is beam width
+      if (dist > 50 && Math.abs(diff) < 0.25) { // Fix: Widen beam hitbox (easier to hit, but also fair)
         // Check Polarity
         const isMatch = (player.polarity === "cyan" && l.color === "#00ffcc") ||
           (player.polarity === "pink" && l.color === "#ff0055");
+
 
         if (!isMatch) {
           gameOver();
