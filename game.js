@@ -857,7 +857,9 @@ const player = {
   speedMult: 1.0, // Upgradeable
   shield: false, // Upgradeable
   polarity: "cyan", // cyan (#00ffcc) or pink (#ff0055)
-  history: [] // For Shadow Mechanic
+  polarity: "cyan", // cyan (#00ffcc) or pink (#ff0055)
+  history: [], // For Shadow Mechanic
+  shadowActive: false // START INACTIVE
 };
 
 let targetX = 0;
@@ -1185,14 +1187,38 @@ function startNextLevel() {
   player.y = height / 2;
   // Clear trails
   player.trail = [];
+  player.history = []; // Fix: Clear shadow history
+  player.shadowActive = false; // Fix: Shadow starts inactive
+
 
   audio.playStart();
 }
 
 function levelComplete() {
   audio.playCollect(); // Victory sound
+
+  if (currentLevelNumber >= 25) {
+    showEndGame();
+    return;
+  }
+
   currentLevelNumber++;
   startNextLevel();
+}
+
+function showEndGame() {
+  gameState = "gameover"; // Stop game loop
+  const overlay = document.getElementById('story-overlay');
+  const titleEl = document.getElementById('story-title');
+  const textEl = document.getElementById('story-text');
+
+  overlay.classList.remove('hidden');
+  titleEl.innerText = "SECTOR CLEAR";
+  textEl.innerHTML = "SYSTEM MESSAGE:<br><br>CONGRATULATIONS AGENT.<br>ALL SECTORS SECURED.<br>FURTHER EPISODES BLOCKED BY ADMINISTRATOR.<br><br>[CLICK TO RETURN TO MENU]";
+
+  document.addEventListener('click', () => {
+    location.reload(); // Simple reload to menu
+  }, { once: true });
 }
 
 // --- Story UI ---
@@ -1418,14 +1444,15 @@ function update() {
       const dy = player.y - shadowPos.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Must be somewhat far from current self to count as collision (so you don't die standing still instantly?) 
-      // User Rule: "You cannot just camp in one spot". 
-      // So if I stand still, my shadow catches up to me -> I die.
-      // However, at start, shadow is at spawn.
-
-      if (dist < player.radius * 2) {
-        // Checking if enough time passed to spawn real shadow hazard
-        if (now - player.history[0].t > 2000) {
+      // Fix: Activation Logic
+      if (!player.shadowActive) {
+        if (dist > 100) { // Must move 100px away to activate
+          player.shadowActive = true;
+          // Visual cue could go here
+        }
+      } else {
+        // Active Hazard
+        if (dist < player.radius * 2) {
           // Death
           createParticle(player.x, player.y, "#ffffff");
           gameOver();
