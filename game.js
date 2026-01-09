@@ -575,6 +575,14 @@ options.forEach(option => {
 
     selectItems.classList.add("select-hide");
     selectSelected.classList.remove("select-arrow-active");
+
+    // Auto-Start on Mode Change
+    if (currentMode === "levels") {
+      currentLevelNumber = 1;
+      startNextLevel();
+    } else {
+      startGame();
+    }
   });
 });
 

@@ -447,9 +447,16 @@ h1.game-title {
     }
 
     /* Hide Desktop Menus */
-    .menu-container,
     .leaderboard-container {
         display: none !important;
+    }
+
+    /* Show Menu on Mobile (Top Center/Left) */
+    .menu-container {
+        display: block !important;
+        top: 60px;
+        /* Below score */
+        left: 20px;
     }
 
     /* Score Display (Top Left instead of center) */
