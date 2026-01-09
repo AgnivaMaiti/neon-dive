@@ -2002,11 +2002,12 @@ function gameLoop() {
 }
 
 // Initial Setup: Hide Leaderboard on Menu
-// Initial Setup: Hide Leaderboard on Menu
-const lb = document.querySelector('.leaderboard-container');
-if (lb) {
-  lb.classList.add('hidden');
-  lb.style.display = "none"; // FORCE HIDE
-}
+document.addEventListener('DOMContentLoaded', () => {
+  const lb = document.querySelector('.leaderboard-container');
+  if (lb) {
+    lb.classList.add('hidden');
+    lb.style.display = "none"; // FORCE HIDE ON LOAD
+  }
+});
 
 gameLoop();
