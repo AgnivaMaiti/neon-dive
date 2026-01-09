@@ -447,9 +447,8 @@ h1.game-title {
     }
 
     /* Hide Desktop Menus */
-    .leaderboard-container {
-        display: none !important;
-    }
+    /* Mobile Leaderboard: allow JS to control visibility (remove display: none) */
+    /* .leaderboard-container { display: none !important; } <--- Removed */
 
     /* Show Menu on Mobile (Top Center/Left) */
     .menu-container {
@@ -502,6 +501,11 @@ h1.game-title {
         font-size: 16px;
         background: rgba(0, 0, 0, 0.7);
         border-width: 3px;
+    }
+
+    /* Fix: Ensure hidden class overrides ID specificity on mobile */
+    #polarityBtn.hidden {
+        display: none !important;
     }
 
     /* Ensure Canvas Fills */
