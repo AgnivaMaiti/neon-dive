@@ -1511,7 +1511,7 @@ function update() {
     const targetTime = now - delay;
     const shadowPos = player.history.find(p => p.t >= targetTime);
 
-    if (shadowPos && player.history.length > 60) { // Grace period at start
+    if (shadowPos && player.history.length > 120) { // Grace period: increased to ~2 seconds (60fps * 2)
       player.shadow = shadowPos;
 
       // Collision with Shadow
@@ -1519,15 +1519,19 @@ function update() {
       const dy = player.y - shadowPos.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Fix: Activation Logic
+      // Fix: Activation Logic - Stronger Checks
       if (!player.shadowActive) {
-        if (dist > 100) { // Must move 100px away to activate
+        // Condition 1: Must move 150px away from start
+        if (dist > 150) {
           player.shadowActive = true;
           // Visual cue could go here
         }
+        // Condition 2: Time fallback (if they just sit there, activate eventually but maybe delayed?)
+        // For now, distance is safer to prevent spawn kill.
       } else {
         // Active Hazard
-        if (dist < player.radius * 2) {
+        // Collision Radius slightly smaller than full player to be forgiving
+        if (dist < player.radius * 1.5) {
           // Death
           createParticle(player.x, player.y, "#ffffff");
           gameOver();
