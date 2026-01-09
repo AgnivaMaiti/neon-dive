@@ -1402,278 +1402,276 @@ function update() {
       ];
     }
 
-  }
+    // Fix: Force Center
+    boss.x = width / 2;
+    boss.y = height / 2;
 
-  // Fix: Force Center
-  boss.x = width / 2;
-  boss.y = height / 2;
-
-  boss.angle += 0.01;
+    boss.angle += 0.01;
 
 
-  // Phase 1: Lasers
-  boss.lasers.forEach(l => {
-    l.angle += 0.01; // Spin
+    // Phase 1: Lasers
+    boss.lasers.forEach(l => {
+      l.angle += 0.01; // Spin
 
-    // Collision with Player (Line Segment to Point)
-    // Simplified: Rotate player point into laser space or check angle
-    const dx = player.x - boss.x;
-    const dy = player.y - boss.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const pAngle = Math.atan2(dy, dx);
-
-    // Normalize angles
-    let diff = l.angle - pAngle;
-    while (diff <= -Math.PI) diff += Math.PI * 2;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-
-    if (dist > 50 && Math.abs(diff) < 0.1) { // 50 is boss radius, 0.1 is beam width
-      // Check Polarity
-      const isMatch = (player.polarity === "cyan" && l.color === "#00ffcc") ||
-        (player.polarity === "pink" && l.color === "#ff0055");
-
-      if (!isMatch) {
-        gameOver();
-      }
-    }
-  });
-} else {
-  boss.active = false;
-}
-
-// Player Move
-if (isTouching) {
-  player.x += (targetX - player.x) * 0.15 * player.speedMult;
-  player.y += (targetY - player.y) * 0.15 * player.speedMult;
-}
-
-// --- Shadow Mechanic (The Mirror) ---
-if (currentMode === "levels" && currentConfig && currentConfig.mechanic === "shadow") {
-  const now = Date.now();
-  player.history.push({ x: player.x, y: player.y, t: now });
-
-  // Prune old history
-  if (player.history.length > 200) player.history.shift();
-
-  // Find shadow position (2 seconds ago)
-  const delay = 2000;
-  const targetTime = now - delay;
-  const shadowPos = player.history.find(p => p.t >= targetTime);
-
-  if (shadowPos && player.history.length > 60) { // Grace period at start
-    player.shadow = shadowPos;
-
-    // Collision with Shadow
-    const dx = player.x - shadowPos.x;
-    const dy = player.y - shadowPos.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    // Fix: Activation Logic
-    if (!player.shadowActive) {
-      if (dist > 100) { // Must move 100px away to activate
-        player.shadowActive = true;
-        // Visual cue could go here
-      }
-    } else {
-      // Active Hazard
-      if (dist < player.radius * 2) {
-        // Death
-        createParticle(player.x, player.y, "#ffffff");
-        gameOver();
-      }
-    }
-  }
-} else {
-  player.history = []; // Reset if not in shadow mode
-  player.shadow = null;
-}
-
-// Cooldowns
-if (player.pulseCooldown > 0) player.pulseCooldown--;
-
-// Trail
-player.trail.push({ x: player.x, y: player.y, r: player.radius });
-if (player.trail.length > player.maxTrail) player.trail.shift();
-
-// Spawning
-const spawnRateStart = 30;
-const spawnRate = Math.max(5, Math.floor(spawnRateStart / difficultyMultiplier));
-if (frame % spawnRate === 0) {
-  createEnemy();
-  audio.playEnemySpawn(); // Sound
-  // 5% Chance for Powerup
-  if (Math.random() < 0.05) createPowerUp();
-}
-
-// Update Powerups
-for (let i = powerups.length - 1; i >= 0; i--) {
-  const p = powerups[i];
-  p.life--;
-  if (p.life <= 0) {
-    powerups.splice(i, 1);
-    continue;
-  }
-  // Collision
-  const dx = player.x - p.x;
-  const dy = player.y - p.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist < player.radius + p.radius) {
-    // Collect
-    if (p.type === 'timeslow') {
-      timeSlowTimer = 300; // 5 Seconds
-    }
-
-    // Story Mode Collection
-    if (currentMode === "levels") {
-      levelCollected++;
-    }
-
-    audio.playCollect(); // Sound
-    powerups.splice(i, 1);
-  }
-}
-
-// Update Enemies
-for (let i = enemies.length - 1; i >= 0; i--) {
-  const e = enemies[i];
-
-  if (e.type === 'snake') {
-    // Snake Logic
-    // 1. Move Head towards player
-    const angle = Math.atan2(player.y - e.headY, player.x - e.headX);
-    e.headX += Math.cos(angle) * e.speed * globalTimeScale;
-    e.headY += Math.sin(angle) * e.speed * globalTimeScale;
-
-    // 2. Drag Segments
-    // Head is "target" for segment 0
-    let targetX = e.headX;
-    let targetY = e.headY;
-
-    for (let j = 0; j < e.segments.length; j++) {
-      const seg = e.segments[j];
-      const dx = targetX - seg.x;
-      const dy = targetY - seg.y;
+      // Collision with Player (Line Segment to Point)
+      // Simplified: Rotate player point into laser space or check angle
+      const dx = player.x - boss.x;
+      const dy = player.y - boss.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const spacing = 10;
+      const pAngle = Math.atan2(dy, dx);
 
-      if (dist > spacing) {
-        const angle = Math.atan2(dy, dx);
-        seg.x += Math.cos(angle) * (dist - spacing); // Snap to spacing
-        seg.y += Math.sin(angle) * (dist - spacing);
+      // Normalize angles
+      let diff = l.angle - pAngle;
+      while (diff <= -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+
+      if (dist > 50 && Math.abs(diff) < 0.1) { // 50 is boss radius, 0.1 is beam width
+        // Check Polarity
+        const isMatch = (player.polarity === "cyan" && l.color === "#00ffcc") ||
+          (player.polarity === "pink" && l.color === "#ff0055");
+
+        if (!isMatch) {
+          gameOver();
+        }
       }
-      targetX = seg.x;
-      targetY = seg.y;
+    });
+  } else {
+    boss.active = false;
+  }
+
+  // Player Move
+  if (isTouching) {
+    player.x += (targetX - player.x) * 0.15 * player.speedMult;
+    player.y += (targetY - player.y) * 0.15 * player.speedMult;
+  }
+
+  // --- Shadow Mechanic (The Mirror) ---
+  if (currentMode === "levels" && currentConfig && currentConfig.mechanic === "shadow") {
+    const now = Date.now();
+    player.history.push({ x: player.x, y: player.y, t: now });
+
+    // Prune old history
+    if (player.history.length > 200) player.history.shift();
+
+    // Find shadow position (2 seconds ago)
+    const delay = 2000;
+    const targetTime = now - delay;
+    const shadowPos = player.history.find(p => p.t >= targetTime);
+
+    if (shadowPos && player.history.length > 60) { // Grace period at start
+      player.shadow = shadowPos;
+
+      // Collision with Shadow
+      const dx = player.x - shadowPos.x;
+      const dy = player.y - shadowPos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Fix: Activation Logic
+      if (!player.shadowActive) {
+        if (dist > 100) { // Must move 100px away to activate
+          player.shadowActive = true;
+          // Visual cue could go here
+        }
+      } else {
+        // Active Hazard
+        if (dist < player.radius * 2) {
+          // Death
+          createParticle(player.x, player.y, "#ffffff");
+          gameOver();
+        }
+      }
+    }
+  } else {
+    player.history = []; // Reset if not in shadow mode
+    player.shadow = null;
+  }
+
+  // Cooldowns
+  if (player.pulseCooldown > 0) player.pulseCooldown--;
+
+  // Trail
+  player.trail.push({ x: player.x, y: player.y, r: player.radius });
+  if (player.trail.length > player.maxTrail) player.trail.shift();
+
+  // Spawning
+  const spawnRateStart = 30;
+  const spawnRate = Math.max(5, Math.floor(spawnRateStart / difficultyMultiplier));
+  if (frame % spawnRate === 0) {
+    createEnemy();
+    audio.playEnemySpawn(); // Sound
+    // 5% Chance for Powerup
+    if (Math.random() < 0.05) createPowerUp();
+  }
+
+  // Update Powerups
+  for (let i = powerups.length - 1; i >= 0; i--) {
+    const p = powerups[i];
+    p.life--;
+    if (p.life <= 0) {
+      powerups.splice(i, 1);
+      continue;
+    }
+    // Collision
+    const dx = player.x - p.x;
+    const dy = player.y - p.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < player.radius + p.radius) {
+      // Collect
+      if (p.type === 'timeslow') {
+        timeSlowTimer = 300; // 5 Seconds
+      }
+
+      // Story Mode Collection
+      if (currentMode === "levels") {
+        levelCollected++;
+      }
+
+      audio.playCollect(); // Sound
+      powerups.splice(i, 1);
+    }
+  }
+
+  // Update Enemies
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+
+    if (e.type === 'snake') {
+      // Snake Logic
+      // 1. Move Head towards player
+      const angle = Math.atan2(player.y - e.headY, player.x - e.headX);
+      e.headX += Math.cos(angle) * e.speed * globalTimeScale;
+      e.headY += Math.sin(angle) * e.speed * globalTimeScale;
+
+      // 2. Drag Segments
+      // Head is "target" for segment 0
+      let targetX = e.headX;
+      let targetY = e.headY;
+
+      for (let j = 0; j < e.segments.length; j++) {
+        const seg = e.segments[j];
+        const dx = targetX - seg.x;
+        const dy = targetY - seg.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const spacing = 10;
+
+        if (dist > spacing) {
+          const angle = Math.atan2(dy, dx);
+          seg.x += Math.cos(angle) * (dist - spacing); // Snap to spacing
+          seg.y += Math.sin(angle) * (dist - spacing);
+        }
+        targetX = seg.x;
+        targetY = seg.y;
+      }
+
+      // Collision (Head only)
+      const dx = player.x - e.headX;
+      const dy = e.headY - player.y; // Corrected sign for consistency
+      const distance = Math.sqrt(dx * dx + (player.y - e.headY) * (player.y - e.headY));
+
+      if (distance < player.radius + e.size) {
+        gameOver();
+      }
+
+      // Pulse Push (Destroy)
+      if (e.pushX || e.pushY) {
+        // If snake gets pushed (by pulse), destroy it
+        createParticle(e.headX, e.headY, e.color);
+        enemies.splice(i, 1);
+        continue;
+      }
+
+      continue; // Skip standard logic
     }
 
-    // Collision (Head only)
-    const dx = player.x - e.headX;
-    const dy = e.headY - player.y; // Corrected sign for consistency
-    const distance = Math.sqrt(dx * dx + (player.y - e.headY) * (player.y - e.headY));
-
-    if (distance < player.radius + e.size) {
-      gameOver();
+    // Apply Push Force (Decay over time)
+    if (e.pushX) {
+      e.x += e.pushX;
+      e.pushX *= 0.9; // Smooth drag
+      if (Math.abs(e.pushX) < 0.1) e.pushX = 0;
+    }
+    if (e.pushY) {
+      e.y += e.pushY;
+      e.pushY *= 0.9;
+      if (Math.abs(e.pushY) < 0.1) e.pushY = 0;
     }
 
-    // Pulse Push (Destroy)
-    if (e.pushX || e.pushY) {
-      // If snake gets pushed (by pulse), destroy it
-      createParticle(e.headX, e.headY, e.color);
+    // Move with Time Scale
+    e.x += e.speedX * globalTimeScale;
+    e.y += e.speedY * globalTimeScale;
+    e.rotation += e.rotSpeed * globalTimeScale;
+
+    // Bounds check
+    if (e.x < -50 || e.x > width + 50 || e.y < -50 || e.y > height + 50) {
       enemies.splice(i, 1);
       continue;
     }
 
-    continue; // Skip standard logic
+    // Distances
+    const dx = player.x - e.x;
+    const dy = e.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Collision
+    if (distance < player.radius + e.size * 0.8) {
+      // Polarity Mechanics (Levels 6-10)
+      if (currentMode === "levels" && currentConfig && currentConfig.mechanic === "polarity") {
+
+        // Exact Color Match Check (Case Insensitive)
+        const pColor = e.color.toLowerCase();
+        const isCyan = (player.polarity === "cyan" && pColor === "#00ffcc");
+        const isPink = (player.polarity === "pink" && pColor === "#ff0055");
+
+        // Also allow swapping logic in fallback? No, just match.
+
+        if (isCyan || isPink) {
+          // ABSORB SUCCESS
+          audio.playGraze();
+          createParticle(e.x, e.y, e.color); // Visual Pop
+          enemies.splice(i, 1);
+          score += 50;
+          scoreEl.innerText = score;
+          continue; // Skip the death check below
+        }
+      }
+
+      // Normal Death (If we didn't absorb it)
+      createParticle(player.x, player.y, player.color);
+      gameOver();
+    }
+
+    // Graze Mechanic
+    const grazeDist = player.radius + e.size * 0.8 + 30; // 30px buffer
+    if (!e.grazed && distance < grazeDist && distance > player.radius + e.size * 0.8) {
+      e.grazed = true;
+      score += 50;
+      scoreEl.innerText = score;
+      scoreEl.style.color = "#fff"; // Flash Score
+      setTimeout(() => scoreEl.style.color = "#00ffcc", 100);
+      createParticle((player.x + e.x) / 2, (player.y + e.y) / 2, "#ffff00"); // Spark
+      audio.playGraze(); // Sound
+    }
   }
 
-  // Apply Push Force (Decay over time)
-  if (e.pushX) {
-    e.x += e.pushX;
-    e.pushX *= 0.9; // Smooth drag
-    if (Math.abs(e.pushX) < 0.1) e.pushX = 0;
-  }
-  if (e.pushY) {
-    e.y += e.pushY;
-    e.pushY *= 0.9;
-    if (Math.abs(e.pushY) < 0.1) e.pushY = 0;
-  }
+  // --- Check Win Condition (Story Mode) ---
+  if (currentMode === "levels" && currentConfig) {
+    if (currentConfig.winCondition.type === 'time') {
+      levelTimer--;
+      const secondsLeft = Math.ceil(levelTimer / 60);
+      scoreEl.innerText = `SURVIVE: ${secondsLeft}s`;
+      if (secondsLeft <= 5) scoreEl.style.color = "#ff0055";
+      else scoreEl.style.color = "#00ffcc";
 
-  // Move with Time Scale
-  e.x += e.speedX * globalTimeScale;
-  e.y += e.speedY * globalTimeScale;
-  e.rotation += e.rotSpeed * globalTimeScale;
-
-  // Bounds check
-  if (e.x < -50 || e.x > width + 50 || e.y < -50 || e.y > height + 50) {
-    enemies.splice(i, 1);
-    continue;
-  }
-
-  // Distances
-  const dx = player.x - e.x;
-  const dy = e.y - player.y;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  // Collision
-  if (distance < player.radius + e.size * 0.8) {
-    // Polarity Mechanics (Levels 6-10)
-    if (currentMode === "levels" && currentConfig && currentConfig.mechanic === "polarity") {
-
-      // Exact Color Match Check (Case Insensitive)
-      const pColor = e.color.toLowerCase();
-      const isCyan = (player.polarity === "cyan" && pColor === "#00ffcc");
-      const isPink = (player.polarity === "pink" && pColor === "#ff0055");
-
-      // Also allow swapping logic in fallback? No, just match.
-
-      if (isCyan || isPink) {
-        // ABSORB SUCCESS
-        audio.playGraze();
-        createParticle(e.x, e.y, e.color); // Visual Pop
-        enemies.splice(i, 1);
-        score += 50;
-        scoreEl.innerText = score;
-        continue; // Skip the death check below
+      if (levelTimer <= 0) {
+        levelComplete();
+      }
+    } else if (currentConfig.winCondition.type === 'collect') {
+      scoreEl.innerText = `DATA: ${levelCollected} / ${currentConfig.winCondition.value}`;
+      scoreEl.style.color = "#00ffcc";
+      if (levelCollected >= currentConfig.winCondition.value) {
+        levelComplete();
       }
     }
-
-    // Normal Death (If we didn't absorb it)
-    createParticle(player.x, player.y, player.color);
-    gameOver();
   }
-
-  // Graze Mechanic
-  const grazeDist = player.radius + e.size * 0.8 + 30; // 30px buffer
-  if (!e.grazed && distance < grazeDist && distance > player.radius + e.size * 0.8) {
-    e.grazed = true;
-    score += 50;
-    scoreEl.innerText = score;
-    scoreEl.style.color = "#fff"; // Flash Score
-    setTimeout(() => scoreEl.style.color = "#00ffcc", 100);
-    createParticle((player.x + e.x) / 2, (player.y + e.y) / 2, "#ffff00"); // Spark
-    audio.playGraze(); // Sound
-  }
-}
-
-// --- Check Win Condition (Story Mode) ---
-if (currentMode === "levels" && currentConfig) {
-  if (currentConfig.winCondition.type === 'time') {
-    levelTimer--;
-    const secondsLeft = Math.ceil(levelTimer / 60);
-    scoreEl.innerText = `SURVIVE: ${secondsLeft}s`;
-    if (secondsLeft <= 5) scoreEl.style.color = "#ff0055";
-    else scoreEl.style.color = "#00ffcc";
-
-    if (levelTimer <= 0) {
-      levelComplete();
-    }
-  } else if (currentConfig.winCondition.type === 'collect') {
-    scoreEl.innerText = `DATA: ${levelCollected} / ${currentConfig.winCondition.value}`;
-    scoreEl.style.color = "#00ffcc";
-    if (levelCollected >= currentConfig.winCondition.value) {
-      levelComplete();
-    }
-  }
-}
 }
 
 function draw() {
