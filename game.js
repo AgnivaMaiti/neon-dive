@@ -1631,14 +1631,9 @@ function update() {
       // Polarity Mechanics (Levels 6-10) OR Boss Levels (21-25)
       if (currentMode === "levels" && currentConfig && (currentConfig.mechanic === "polarity" || currentConfig.mechanic === "boss")) {
 
-        // Exact Color Match Check (Case Insensitive)
-        const pColor = e.color.toLowerCase();
-        const isCyan = (player.polarity === "cyan" && pColor === "#00ffcc");
-        const isPink = (player.polarity === "pink" && pColor === "#ff0055");
-
-        // Also allow swapping logic in fallback? No, just match.
-
-        if (isCyan || isPink) {
+        // Exact Color Match Check (Direct Color Comparison)
+        // This handles cases where polarity string might be desynced from visual color
+        if (player.color.toLowerCase() === e.color.toLowerCase()) {
           // ABSORB SUCCESS
           audio.playGraze();
           createParticle(e.x, e.y, e.color); // Visual Pop

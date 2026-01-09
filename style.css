@@ -434,74 +434,85 @@ h1.game-title {
     /* Minimize Top Bar */
     .top-bar {
         position: absolute;
-        /* Float on top */
         top: 0;
         left: 0;
         width: 100%;
-        padding: 5px;
-        background: rgba(0, 0, 0, 0.3);
-        /* Semi-transparent */
-        justify-content: space-between;
-        pointer-events: none;
-        /* Let touches pass through empty space */
+        padding: 10px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
         z-index: 100;
-        flex-wrap: nowrap;
+        pointer-events: none;
     }
 
-    /* Make interactive elements clickable again */
+    /* Make interactive elements clickable */
     .top-bar>* {
         pointer-events: auto;
     }
 
-    /* Hide non-essential UI on mobile during play */
+    /* Hide Desktop Menus */
     .menu-container,
     .leaderboard-container {
         display: none !important;
     }
 
-    /* Keep Score and Settings/Pause */
+    /* Score Display (Top Left instead of center) */
     .score-container {
         position: absolute;
-        top: 50px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 1.2rem;
-        pointer-events: none;
-        text-shadow: 0 0 5px black;
+        top: 15px;
+        left: 20px;
+        transform: none;
+        text-align: left;
     }
 
+    .score-label {
+        font-size: 10px;
+    }
+
+    .score-value {
+        font-size: 24px;
+    }
+
+    /* Settings in Top Right */
     .settings-container {
-        margin-left: auto;
-        /* Push to right */
-    }
-
-    /* Adjust Buttons for Touch */
-    .settings-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    /* Polarity Button Position */
-    #polarityBtn {
-        bottom: 20px;
+        position: absolute;
+        top: 15px;
         right: 20px;
-        width: 80px;
-        height: 80px;
-        opacity: 0.7;
-        /* See through */
+    }
+
+    .settings-btn {
+        width: 44px;
+        height: 44px;
+        /* Larger touch target */
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    /* Polarity Button (Bottom Right - Thumb Zone) */
+    #polarityBtn {
+        bottom: 30px;
+        right: 30px;
+        width: 90px;
+        height: 90px;
+        opacity: 0.8;
         z-index: 200 !important;
-        /* Force on top of Top Bar */
         pointer-events: auto !important;
-        /* Ensure clickable */
+        font-size: 16px;
+        background: rgba(0, 0, 0, 0.7);
+        border-width: 3px;
     }
 
     /* Ensure Canvas Fills */
     canvas {
         width: 100%;
         height: 100%;
+    }
+
+    /* Improve Text Readability */
+    h1.game-title {
+        font-size: 40px;
+    }
+
+    .start-btn {
+        padding: 15px 50px;
+        font-size: 20px;
     }
 
     /* Hide scrollbars */
