@@ -1180,11 +1180,17 @@ function startNextLevel() {
   // 1. Polarity Button
   // Show in Polarity Sector (6-10) or Boss Sector (21-25)
   if (config.mechanic === "polarity" || config.mechanic === "boss" || (config.id >= 6 && config.id <= 10) || (config.id >= 21 && config.id <= 25)) {
+    // Force Display Block (Override CSS)
+    document.getElementById("polarityBtn").style.display = "block";
     document.getElementById("polarityBtn").classList.remove("hidden");
+
     player.polarity = "cyan";
     player.color = "#00ffcc";
   } else {
+    // Force Hide (Override CSS)
+    document.getElementById("polarityBtn").style.display = "none";
     document.getElementById("polarityBtn").classList.add("hidden");
+
     player.color = "#00ffcc";
   }
 
@@ -1317,10 +1323,14 @@ function startGame() {
 
   // Fix: Hide Polarity Button in Leisure/Hardcore
   document.getElementById("polarityBtn").classList.add("hidden");
+  document.getElementById("polarityBtn").style.display = "none"; // FORCE HIDE
 
   // Fix: Show Leaderboard in Leisure/Hardcore (since it's hidden by default)
   const lb = document.querySelector('.leaderboard-container');
-  if (lb) lb.classList.remove('hidden');
+  if (lb) {
+    lb.classList.remove('hidden');
+    lb.style.display = "block"; // FORCE SHOW
+  }
 
   audio.playStart(); // Start Audio
 
@@ -1338,7 +1348,10 @@ function gameOver() {
 
   // Fix: Show Leaderboard on Game Over
   const lb = document.querySelector('.leaderboard-container');
-  if (lb) lb.classList.remove('hidden');
+  if (lb) {
+    lb.classList.remove('hidden');
+    lb.style.display = "block"; // FORCE SHOW
+  }
 
   audio.playGameOver(); // End Audio
 
@@ -1989,7 +2002,11 @@ function gameLoop() {
 }
 
 // Initial Setup: Hide Leaderboard on Menu
+// Initial Setup: Hide Leaderboard on Menu
 const lb = document.querySelector('.leaderboard-container');
-if (lb) lb.classList.add('hidden');
+if (lb) {
+  lb.classList.add('hidden');
+  lb.style.display = "none"; // FORCE HIDE
+}
 
 gameLoop();
