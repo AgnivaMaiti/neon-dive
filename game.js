@@ -1118,6 +1118,7 @@ function triggerPulse() {
   shakeAmount = 20;
 
   // Logical: Add strong push force to enemies AND Grid
+
   enemies.forEach(e => {
     // Handle Snake Coordinates
     let ex = e.x;
@@ -1314,7 +1315,15 @@ function startGame() {
   timeSlowTimer = 0;
   player.pulseCooldown = 0;
 
+  // Fix: Hide Polarity Button in Leisure/Hardcore
+  document.getElementById("polarityBtn").classList.add("hidden");
+
+  // Fix: Show Leaderboard in Leisure/Hardcore (since it's hidden by default)
+  const lb = document.querySelector('.leaderboard-container');
+  if (lb) lb.classList.remove('hidden');
+
   audio.playStart(); // Start Audio
+
 }
 
 function gameOver() {
@@ -1324,7 +1333,15 @@ function gameOver() {
   startBtn.innerText = "TRY AGAIN";
   saveScore(score);
 
+  startBtn.innerText = "TRY AGAIN";
+  saveScore(score);
+
+  // Fix: Show Leaderboard on Game Over
+  const lb = document.querySelector('.leaderboard-container');
+  if (lb) lb.classList.remove('hidden');
+
   audio.playGameOver(); // End Audio
+
 }
 
 const audio = new AudioController();
