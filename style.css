@@ -174,11 +174,9 @@ canvas {
     text-align: right;
     color: white;
     z-index: 20;
+    color: white;
+    z-index: 20;
     pointer-events: auto;
-}
-
-text-align: right;
-color: white;
 }
 
 .leaderboard-title {
