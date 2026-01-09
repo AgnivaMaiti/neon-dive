@@ -85,7 +85,7 @@ class LevelGenerator {
     if (levelNum % 5 === 0) {
       winCondition = { type: 'collect', value: 3 + Math.floor(levelNum / 5) };
     } else {
-      winCondition = { type: 'time', value: 15 + (levelNum * 2) }; // Seconds increase slightly
+      winCondition = { type: 'time', value: Math.min(60, 15 + (levelNum * 2)) }; // Max 60 seconds
     }
 
     // 4. Check for Story
@@ -1405,6 +1405,7 @@ function update() {
         { angle: Math.PI / 2, color: "#ff0055" },
         { angle: -Math.PI / 2, color: "#00ffcc" }
       ];
+      boss.spawnTime = Date.now(); // Fix: Track spawn time for safety buffer
     }
 
     // Fix: Force Center
@@ -1429,6 +1430,14 @@ function update() {
       let diff = l.angle - pAngle;
       while (diff <= -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
+
+      // Fix: 2 Second Safety Buffer
+      if (Date.now() - boss.spawnTime < 2000) {
+        l.opacity = 0.2; // Visual cue
+        return; // Skip collision
+      } else {
+        l.opacity = 1.0;
+      }
 
       if (dist > 50 && Math.abs(diff) < 0.25) { // Fix: Widen beam hitbox (easier to hit, but also fair)
         // Check Polarity
@@ -1619,8 +1628,8 @@ function update() {
 
     // Collision
     if (distance < player.radius + e.size * 0.8) {
-      // Polarity Mechanics (Levels 6-10)
-      if (currentMode === "levels" && currentConfig && currentConfig.mechanic === "polarity") {
+      // Polarity Mechanics (Levels 6-10) OR Boss Levels (21-25)
+      if (currentMode === "levels" && currentConfig && (currentConfig.mechanic === "polarity" || currentConfig.mechanic === "boss")) {
 
         // Exact Color Match Check (Case Insensitive)
         const pColor = e.color.toLowerCase();
@@ -1892,7 +1901,7 @@ function draw() {
 
       ctx.strokeStyle = l.color;
       ctx.lineWidth = 4;
-      ctx.globalAlpha = 0.6;
+      ctx.globalAlpha = l.opacity || 1.0; // Use the opacity set in update
       ctx.beginPath();
       ctx.moveTo(boss.x, boss.y);
       ctx.lineTo(lx, ly);
