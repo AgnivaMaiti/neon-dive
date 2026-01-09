@@ -1988,4 +1988,8 @@ function gameLoop() {
   draw();
 }
 
+// Initial Setup: Hide Leaderboard on Menu
+const lb = document.querySelector('.leaderboard-container');
+if (lb) lb.classList.add('hidden');
+
 gameLoop();
